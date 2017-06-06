@@ -7,7 +7,6 @@ import time          # Import necessary modules
 import sys, os
 from threading import Thread
 
-
 HOST = ''           # The variable of HOST is null, so the function bind( ) can be bound to all valid addresses.
 PORT = 21567
 BUFSIZ = 1024       # Size of the buffer
@@ -20,18 +19,50 @@ tcpSerSock.listen(5)     # The parameter of listen() defines the number of conne
 
 busnum = 1          # Edit busnum to 0, if you uses Raspberry Pi 1 or 0
 
+HOME = 'HOME'
+LEFT = 'LEFT'
+RIGHT = 'RIGHT'
+SLIGHT_LEFT = 'SLEFT'
+SLIGHT_RIGHT = 'SRIGHT'
+FORWARD = 'FORWARD'
+BACKWARD = 'BACKWARD'
+SPEED = 'SPEED='
+
+# Streamer thread class to send images via HTTP
 class MJPGStreamerThread(Thread):
 	def __init__(self):
-		pass
+		Thread.__init__(self)
 
 	def run(self):
-
-
+		print "MJPGStreamer Thread started.\n"
+		dirname = "../mjpg-streamer/mjpg-streamer/"
+		os.chdir(dirname)
+		command = "./start.sh > /dev/null 2>&1"
+		os.system(command)
 
 def setup():
+	# Setup and calibrate direction and motor
 	car_dir.setup(busnum=busnum)
 	motor.setup(busnum=busnum)
 	car_dir.home()
+
+	# Starting streamer thread for image processing
+	mjpg_st_th = MJPGStreamerThread()
+	mjpg_st_th.start()
+
+def loop():
+	while True:
+
+		print 'Waiting for connection...'
+
+		tcpCliSock, addr = tcpSerSock.accept()
+		print '...connected from :', addr
+
+		while True:
+			pass
+
+
+
 
 def turn_right():
 	car_dir.turn_right()
@@ -46,8 +77,8 @@ def turn_angle(angle):
 	car_dir.turn(angle)
 
 def test():
-	motor.setSpeed(100)
-	motor.forward()
+	# motor.setSpeed(100)
+	# motor.forward()
 
 	time.sleep(1)
 	
@@ -59,16 +90,16 @@ def test():
 	turn_home()
 
 	time.sleep(1)
-	motor.ctrl(0)
-	motor.setSpeed(0)	
+	# motor.ctrl(0)
+	# motor.setSpeed(0)	
 
 def back():
-	motor.setSpeed(100)
-	motor.backward()
+	# motor.setSpeed(100)
+	# motor.backward()
 
 	time.sleep(2.8)
 
-	motor.setSpeed(0)
+	# motor.setSpeed(0)
 
 if __name__ == "__main__":
 	try:
