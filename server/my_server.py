@@ -4,6 +4,9 @@ import car_dir
 import motor
 from socket import *
 import time          # Import necessary modules
+import sys, os
+from threading import Thread
+
 
 HOST = ''           # The variable of HOST is null, so the function bind( ) can be bound to all valid addresses.
 PORT = 21567
@@ -16,6 +19,14 @@ tcpSerSock.listen(5)     # The parameter of listen() defines the number of conne
                          # connections are full, others will be rejected. 
 
 busnum = 1          # Edit busnum to 0, if you uses Raspberry Pi 1 or 0
+
+class MJPGStreamerThread(Thread):
+	def __init__(self):
+		pass
+
+	def run(self):
+
+
 
 def setup():
 	car_dir.setup(busnum=busnum)
