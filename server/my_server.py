@@ -34,7 +34,7 @@ class MJPGStreamerThread(Thread):
 		Thread.__init__(self)
 
 	def run(self):
-		print "MJPGStreamer Thread started.\n"
+		print 'MJPGStreamer Thread started.\n'
 		dirname = "../mjpg-streamer/mjpg-streamer/"
 		os.chdir(dirname)
 		command = "./start.sh > /dev/null 2>&1"
@@ -52,17 +52,37 @@ def setup():
 
 def loop():
 	while True:
-
 		print 'Waiting for connection...'
-
+		# accept() is blocking until a new connection has been made
 		tcpCliSock, addr = tcpSerSock.accept()
 		print '...connected from :', addr
 
 		while True:
-			pass
-
-
-
+			data = ''
+			data = tcpCliSock.recv(BUFSIZ)    # Receive data sent from the client.
+			if data == HOME:
+				turn_home()
+			elif data == LEFT:
+				turn_left()
+			elif data == RIGHT:
+				turn_right()
+			elif data == SLIGHT_LEFT:
+				pass
+			elif data == SLIGHT_RIGHT:
+				pass
+			elif data == FORWARD:
+				forward()
+			elif data == BACKWARD:
+				backward()
+			elif data.startswith(SPEED)
+				spd = data.split('=', 1)[1]
+				try:
+					spd = int(spd)
+					set_speed(spd)
+				except
+					print 'Set speed transmitted incorrect: ', spd
+			else
+				print 'Unrecognized command: ', data
 
 def turn_right():
 	car_dir.turn_right()
@@ -75,6 +95,15 @@ def turn_home():
 
 def turn_angle(angle):
 	car_dir.turn(angle)
+
+def forward():
+	motor.forward()
+
+def backward():
+	motor.backward()
+
+def set_speed(spd):
+	motor.set_speed(spd)
 
 def test():
 	# motor.setSpeed(100)
@@ -101,10 +130,13 @@ def back():
 
 	# motor.setSpeed(0)
 
-if __name__ == "__main__":
+def main():
 	try:
 		setup()
 		test()
 		back()
 	except KeyboardInterrupt:
 		tcpSerSock.close()
+
+if __name__ == "__main__":
+	main()
