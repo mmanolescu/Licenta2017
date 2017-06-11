@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from socket import *      # Import necessary modules
+import time
 
-HOST = '192.168.0.147'    # Server(Raspberry Pi) IP address
+HOST = '10.1.10.108'    # Server(Raspberry Pi) IP address
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)
@@ -19,29 +20,37 @@ FORWARD = 'FORWARD'
 BACKWARD = 'BACKWARD'
 SPEED = 'SPEED='
 
+def send_command(cmd):
+	tcpCliSock.sendall(cmd)
+	ack_data = tcpCliSock.recv(BUFSIZ)
+
 def turn_home():
-	tcpCliSock.send(HOME)
+	send_command(HOME)
 
 def turn_left():
-	tcpCliSock.send(LEFT)
+	send_command(LEFT)
 
 def turn_slight_left():
-	tcpCliSock.send(SLIGHT_LEFT)
+	send_command(SLIGHT_LEFT)
 
 def turn_right():
-	tcpCliSock.send(RIGHT)
+	send_command(RIGHT)
 
 def turn_slight_right():
-	tcpCliSock.send(SLIGHT_RIGHT)
+	send_command(SLIGHT_RIGHT)
 
 def forward():
-	tcpCliSock.send(FORWARD)
+	send_command(FORWARD)
 
 def backward():
-	tcpCliSock.send(BACKWARD)
+	send_command(BACKWARD)
 
 def set_speed(spd):
-	tcpCliSock.send(SPEED + spd)
+	if spd > 100:
+		spd = 100
+	elif spd < 0:
+		spd = 0
+	send_command(SPEED + str(spd))
 
 def main():
 	while True:
@@ -50,8 +59,21 @@ def main():
 		# + lista de obiecte 
 
 		# Apel pid pentru distanta stanga dreapta => decizie
+		set_speed(40)
+		forward()
+		time.sleep(10)
+		# turn_slight_right()
+		time.sleep(1)
+		set_speed(100)
+		time.sleep(1)
 
+		turn_home()
+		backward()
+		time.sleep(2)
 
 
 if __name__ == '__main__':
-	main()
+	try:
+		main()
+	except KeyboardInterrupt:
+		tcpCliSock.close()

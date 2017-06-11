@@ -4,7 +4,7 @@ import car_dir
 import motor
 from socket import *
 import time          # Import necessary modules
-import sys, os
+import sys, os, traceback
 from threading import Thread
 
 HOST = ''           # The variable of HOST is null, so the function bind( ) can be bound to all valid addresses.
@@ -23,7 +23,9 @@ HOME = 'HOME'
 LEFT = 'LEFT'
 RIGHT = 'RIGHT'
 SLIGHT_LEFT = 'SLEFT'
+SLIGHT_LEFT_ANGLE = 80
 SLIGHT_RIGHT = 'SRIGHT'
+SLIGHT_RIGHT_ANGLE = 175
 FORWARD = 'FORWARD'
 BACKWARD = 'BACKWARD'
 SPEED = 'SPEED='
@@ -60,6 +62,8 @@ def loop():
 		while True:
 			data = ''
 			data = tcpCliSock.recv(BUFSIZ)    # Receive data sent from the client.
+			if not data:
+				break
 			if data == HOME:
 				turn_home()
 			elif data == LEFT:
@@ -67,22 +71,32 @@ def loop():
 			elif data == RIGHT:
 				turn_right()
 			elif data == SLIGHT_LEFT:
-				pass
+				turn_angle(SLIGHT_LEFT_ANGLE)
 			elif data == SLIGHT_RIGHT:
-				pass
+				turn_angle(SLIGHT_RIGHT_ANGLE)
 			elif data == FORWARD:
 				forward()
 			elif data == BACKWARD:
 				backward()
-			elif data.startswith(SPEED)
+			elif data.startswith(SPEED) == True:
 				spd = data.split('=', 1)[1]
 				try:
-					spd = int(spd)
-					set_speed(spd)
-				except
+					print spd
+					speed = int(spd)
+					print speed
+					set_speed(speed)
+				except Exception:
 					print 'Set speed transmitted incorrect: ', spd
-			else
+					print(traceback.format_exc())
+			else:
 				print 'Unrecognized command: ', data
+
+			# Send ACK that command was processed and client cand send new command
+			tcpCliSock.send('ACK')
+
+		# In case connection is lost we should stop the car
+		turn_home()
+		set_speed(0)
 
 def turn_right():
 	car_dir.turn_right()
@@ -103,8 +117,20 @@ def backward():
 	motor.backward()
 
 def set_speed(spd):
-	motor.set_speed(spd)
+	motor.setSpeed(spd)
 
+def main():
+	try:
+		setup()
+		loop()
+	except KeyboardInterrupt:
+		set_speed(0)
+		tcpSerSock.close()
+
+if __name__ == "__main__":
+	main()
+
+# For testing and debug 
 def test():
 	# motor.setSpeed(100)
 	# motor.forward()
@@ -129,14 +155,3 @@ def back():
 	time.sleep(2.8)
 
 	# motor.setSpeed(0)
-
-def main():
-	try:
-		setup()
-		test()
-		back()
-	except KeyboardInterrupt:
-		tcpSerSock.close()
-
-if __name__ == "__main__":
-	main()
