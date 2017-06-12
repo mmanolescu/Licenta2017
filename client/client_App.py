@@ -8,7 +8,7 @@ ctrl_cmd = ['forward', 'backward', 'left', 'right', 'stop', 'read cpu_temp', 'ho
 top = Tk()   # Create a top window
 top.title('Sunfounder Raspberry Pi Smart Video Car')
 
-HOST = '192.168.0.147'    # Server(Raspberry Pi) IP address
+HOST = '10.1.0.1'    # Server(Raspberry Pi) IP address
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)
@@ -17,9 +17,9 @@ tcpCliSock = socket(AF_INET, SOCK_STREAM)   # Create a socket
 tcpCliSock.connect(ADDR)                    # Connect with the server
 
 # =============================================================================
-# The function is to send the command forward to the server, so as to make the 
+# The function is to send the command forward to the server, so as to make the
 # car move forward.
-# ============================================================================= 
+# =============================================================================
 def forward_fun(event):
 	print 'forward'
 	tcpCliSock.send('forward')
@@ -65,7 +65,7 @@ def xy_home(event):
 	tcpCliSock.send('xy_home')
 
 # =============================================================================
-# Exit the GUI program and close the network connection between the client 
+# Exit the GUI program and close the network connection between the client
 # and server.
 # =============================================================================
 def quit_fun(event):
@@ -140,11 +140,11 @@ Btn11.bind('<ButtonPress-1>', xy_home)
 #Btn11.bind('<ButtonRelease-1>', home_fun)
 
 # =============================================================================
-# Bind buttons on the keyboard with the corresponding callback function to 
+# Bind buttons on the keyboard with the corresponding callback function to
 # control the car remotely with the keyboard.
 # =============================================================================
 top.bind('<KeyPress-a>', left_fun)   # Press down key 'A' on the keyboard and the car will turn left.
-top.bind('<KeyPress-d>', right_fun) 
+top.bind('<KeyPress-d>', right_fun)
 top.bind('<KeyPress-s>', backward_fun)
 top.bind('<KeyPress-w>', forward_fun)
 top.bind('<KeyPress-h>', home_fun)
@@ -159,7 +159,7 @@ def changeSpeed(ev=None):
 	tmp = 'speed'
 	global spd
 	spd = speed.get()
-	data = tmp + str(spd)  # Change the integers into strings and combine them with the string 'speed'. 
+	data = tmp + str(spd)  # Change the integers into strings and combine them with the string 'speed'.
 	print 'sendData = %s' % data
 	tcpCliSock.send(data)  # Send the speed data to the server(Raspberry Pi)
 

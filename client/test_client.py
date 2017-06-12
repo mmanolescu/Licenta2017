@@ -3,6 +3,7 @@
 from socket import *      # Import necessary modules
 import time
 
+
 import stream_client as sc
 import color_gradient_selector as cgs
 import cv2
@@ -59,41 +60,16 @@ def set_speed(spd):
 	send_command(SPEED + str(spd))
 
 
-
 TMP_FILE = 'tmp.jpg'
 
-def in_borders(index):
-	if index < 300:
-		return -1
-
-	if index > 400:
-		return 1
-
-	return 0
-
-
-def get_white_line_index(img):
-	H, L = img.shape
-	index = None
-	maxVal = None
-
-	for i in range(11, L - 11):
-		s = 0
-		for j in range(i - 5, i + 5):
-			s = s + img[50][j]
-		if index == None:
-			index = i
-		elif s > maxVal:
-			index = i
-			maxVal = s
-
-	return index
-
-
 def main():
-	set_speed(65)
-	last = None
+	set_speed(40)
+
 	while True:
+		# Din modulul lui Vasile -> getState()
+		# returneaza distanta pana in marginea stanga si pana in marginea dreapta
+		# + lista de obiecte
+
 		img = sc.get_next_jpeg()
 
 		#os.remove(TMP_FILE)
@@ -104,46 +80,13 @@ def main():
 		imgFile = cv2.imread(TMP_FILE, cv2.CV_LOAD_IMAGE_COLOR)
 		half_img = cv2.resize(imgFile, (0,0), fx=0.5, fy=0.5)
 		gray = cgs.select_rgb_white_yellow(imgFile)
-		gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
-		#edges = cv2.Canny(gray, 50, 150, apertureSize = 3)
 
 		cv2.imshow('image', gray)
 		cv2.waitKey(1)
 
-		# Get left and right road_lines coordinates
-		# left margin of image is -1
-		# right margin of image is
-		# left_line, right_line = get_road_lines_coordinates(gray)
-
-		index = get_white_line_index(gray)
-		print index
-
-		if in_borders(index) == -1:
-			turn_right()
-
-		if in_borders(index) == 1:
-			turn_left()
-
-		forward()
-
-
-	while True:
-		# Din modulul lui Vasile -> getState()
-		# returneaza distanta pana in marginea stanga si pana in marginea dreapta
-		# + lista de obiecte
-
 		# Apel pid pentru distanta stanga dreapta => decizie
-		set_speed(40)
 		forward()
-		time.sleep(10)
-		# turn_slight_right()
 		time.sleep(1)
-		set_speed(100)
-		time.sleep(1)
-
-		turn_home()
-		backward()
-		time.sleep(2)
 
 
 if __name__ == '__main__':
