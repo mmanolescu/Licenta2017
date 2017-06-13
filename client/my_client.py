@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from socket import *      # Import necessary modules
 import time
+import pid
 
 HOST = '10.1.10.108'    # Server(Raspberry Pi) IP address
 PORT = 21567
@@ -19,6 +20,13 @@ SLIGHT_RIGHT = 'SRIGHT'
 FORWARD = 'FORWARD'
 BACKWARD = 'BACKWARD'
 SPEED = 'SPEED='
+
+# GainzZz for pid algorithm
+KP = 0.1
+KD = 0.01
+KI = 0.5
+THRESHOLD = 5
+PERMITTED_ERROR = 10
 
 def send_command(cmd):
 	tcpCliSock.sendall(cmd)
@@ -53,27 +61,49 @@ def set_speed(spd):
 	send_command(SPEED + str(spd))
 
 def main():
+	pid_obj = PID(KP, KD, KI)
+	
+	turn_home()
+	set_speed(50)
+	forward()
+	prev_dt = time.time()
+
 	while True:
 		# Din modulul lui Vasile -> getState()
 		# returneaza distanta pana in marginea stanga si pana in marginea dreapta
 		# + lista de obiecte 
+		left = 0
+		right = 0
 
+		error = left + right
+		print error
+		if (error <= PERMITTED_ERROR)
+			turn_home()
+			set_speed(100)
+			continue
+
+		dt = time.time() - prev_dt
+		prev_dt = time.time()
+		increase = pid_obj.calculate(dt, 0, error)
 		# Apel pid pentru distanta stanga dreapta => decizie
-		set_speed(40)
-		forward()
-		time.sleep(10)
-		# turn_slight_right()
-		time.sleep(1)
-		set_speed(100)
-		time.sleep(1)
-
-		turn_home()
-		backward()
-		time.sleep(2)
+		
+		if abs(increase) < THRESHOLD:
+			if increase > 0:
+				turn_slight_left()
+			else:
+				turn_slight_right()
+		else:
+			if increase > 0:
+				set_speed(50)
+				turn_left()
+			else:
+				set_speed(50)
+				turn_right()
 
 
 if __name__ == '__main__':
 	try:
+		init()
 		main()
 	except KeyboardInterrupt:
 		tcpCliSock.close()
