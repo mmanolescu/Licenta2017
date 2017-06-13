@@ -67,6 +67,7 @@ def set_speed(spd):
 
 
 def main():
+	wl.set_host(HOST)
 	pid_obj = pid.PID(KP, KD, KI)
 
 	turn_home()
@@ -85,7 +86,7 @@ def main():
 		# print error
 		if (error <= PERMITTED_ERROR):
 			turn_home()
-			set_speed(100)
+			set_speed(50)
 			continue
 
 		dt = time.time() - prev_dt
@@ -100,10 +101,10 @@ def main():
 				turn_slight_right()
 		else:
 			if increase > 0:
-				set_speed(50)
+				set_speed(35)
 				turn_left()
 			else:
-				set_speed(50)
+				set_speed(35)
 				turn_right()
 
 

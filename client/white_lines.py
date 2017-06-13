@@ -9,9 +9,10 @@ import cv2
 import os
 import numpy as np
 
-HOST = '10.1.0.1'    # Server(Raspberry Pi) IP address
+HOST = ''    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
+CENTER_INDEX = 320
 
 TMP_FILE = 'tmp.jpg'
 
@@ -61,8 +62,12 @@ def get_white_line_index():
 			maxVal = s
 
 	H, L = gray.shape
+	indexLeft -= 320
+	indexRight -= 320
 	return indexLeft, indexRight
 
+def set_host(host):
+	HOST = host
 
 def main():
 	#set_speed(25)
