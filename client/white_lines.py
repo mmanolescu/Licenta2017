@@ -61,7 +61,6 @@ def get_white_line_index():
 			maxVal = s
 
 	H, L = gray.shape
-	print L
 	return indexLeft, indexRight
 
 
