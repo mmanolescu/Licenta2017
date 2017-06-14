@@ -31,7 +31,7 @@ SPEED = 'SPEED='
 # GainzZz for pid algorithm
 KP = 0.1
 KD = 0.01
-KI = 0.5
+KI = 0.05
 THRESHOLD = 5
 PERMITTED_ERROR = 10
 
@@ -67,29 +67,27 @@ def set_speed(spd):
 		spd = 0
 	send_command(SPEED + str(spd))
 
-def test():
-	last_move = None
-	while True:
-		index = white_lines.get_white_line_index()
-		print index
-		mid = 160
+# def test():
+# 	last_move = None
+# 	while True:
+# 		index = white_lines.get_white_line_index()
+# 		print index
+# 		mid = 160
 
-		dif = mid - index
+# 		dif = mid - index
 
-		if abs(dif) < 20:
-			turn_home()
-		elif dif > 0:
-			last_move = 'l'
-			turn_left()
-		else:
-			last_move = 'r'
-			turn_right()
+# 		if abs(dif) < 20:
+# 			turn_home()
+# 		elif dif > 0:
+# 			last_move = 'l'
+# 			turn_left()
+# 		else:
+# 			last_move = 'r'
+# 			turn_right()
 
-		forward()
+# 		forward()
 
 def main():
-	set_speed(45)
-	test()
 
 	wl.set_host(HOST)
 	pid_obj = pid.PID(KP, KD, KI)
@@ -104,32 +102,32 @@ def main():
 		# Din modulul lui Vasile -> getState()
 		# returneaza distanta pana in marginea stanga si pana in marginea dreapta
 		# + lista de obiecte
-		left, right = wl.get_white_line_index()
-		print "Left: ", left, " Right:", right
+		index = wl.get_white_line_index()
+		print "Index: ", index
 
-		error = left + right
-		print error
-		if (error <= PERMITTED_ERROR):
+		error = 160 - index
+		# print error
+		if (abs(error) <= PERMITTED_ERROR):
 			turn_home()
 			set_speed(50)
 			continue
 
 		dt = time.time() - prev_dt
 		prev_dt = time.time()
-		increase = pid_obj.calculate(dt, 0, error)
+		increase = pid_obj.calculate(0.1, 0, error)
+		print "Increase: ", increase, " Error: ", error
 		# Apel pid pentru distanta stanga dreapta => decizie
-		print increase
 		if abs(increase) < THRESHOLD:
-			if increase > 0:
+			if increase < 0:
 				turn_slight_left()
 			else:
 				turn_slight_right()
 		else:
-			if increase > 0:
-				set_speed(35)
+			if increase < 0:
+				# set_speed(50)
 				turn_left()
 			else:
-				set_speed(35)
+				# set_speed(50)
 				turn_right()
 
 
