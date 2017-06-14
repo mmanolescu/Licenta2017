@@ -16,7 +16,10 @@ CENTER_INDEX = 320
 
 TMP_FILE = 'tmp.jpg'
 
+last_good_index = 0
+
 def get_white_line_index():
+	global last_good_index
 	img = sc.get_next_jpeg()
 
 	#os.remove(TMP_FILE)
@@ -54,21 +57,23 @@ def get_white_line_index():
 	cv2.imshow('image', gray)
 	cv2.waitKey(1)
 
-	return np.sum(l) / len(l)
+	index = np.sum(l) / len(l)
+
+	if index == 0:
+		return last_good_index
+	else:
+		last_good_index = index
+		return last_good_index
+
+
 
 def set_host(host):
 	HOST = host
 
 def main():
 	#set_speed(25)
-	last = None
-	start_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 	while True:
 		index = get_white_line_index()
-	end_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
-	print start_time
-	print end_time
 
 
 if __name__ == '__main__':
