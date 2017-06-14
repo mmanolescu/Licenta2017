@@ -28,3 +28,12 @@ class PID():
 		self.prev_error = error
 
 		return output
+
+if __name__ == '__main__':
+	pid = PID(0.1, 0.01, 0.5)
+
+	val = 20
+	for i in range(1, 100):
+		inc = pid.calculate(0.1, 0, val)
+		print val, inc
+		val += inc
