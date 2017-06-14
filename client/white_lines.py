@@ -9,7 +9,7 @@ import cv2
 import os
 import numpy as np
 
-HOST = '10.1.0.1'    # Server(Raspberry Pi) IP address
+HOST = '10.1.10.106'    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
 
@@ -25,52 +25,49 @@ def get_white_line_index():
 
 	imgFile = cv2.imread(TMP_FILE, cv2.CV_LOAD_IMAGE_COLOR)
 	half_img = cv2.resize(imgFile, (0,0), fx=0.5, fy=0.5)
-	gray = cgs.select_rgb_white_yellow(imgFile)
+	gray = cgs.select_rgb_white_yellow(half_img)
 	gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
-	#edges = cv2.Canny(gray, 50, 150, apertureSize = 3)
+
+	height, width = gray.shape
+
+	l = []
+	for x in range(height/2, height, 20):
+		maxSum = 0
+		index = 0
+		flag = True
+		s = 0
+		for i in range(11, width - 12):
+			if flag == True:
+				for j in range(i - 5, i + 5):
+					s = s + gray[x][j]
+				flag = False
+			else:
+				s = s - gray[x][i - 5 - 1] + gray[x][i + 5 - 1]
+
+			if s > maxSum:
+				maxSum = s
+				index = i
+		l.append(index)
+
+
 
 	cv2.imshow('image', gray)
 	cv2.waitKey(1)
 
+	return np.sum(l) / len(l)
 
-	H, L = gray.shape
-	indexLeft = None
-	maxVal = None
-
-	for i in range(11, L/2 - 11):
-		s = 0
-		for j in range(i - 5, i + 5):
-			s = s + gray[100][j]
-		if indexLeft == None:
-			indexLeft = i
-		elif s > maxVal:
-			indexLeft = i
-			maxVal = s
-
-	indexRight = None
-	maxVal = None
-
-	for i in range(L/2, L - 11):
-		s = 0
-		for j in range(i - 5, i + 5):
-			s = s + gray[100][j]
-		if indexRight == None:
-			indexRight = i
-		elif s > maxVal:
-			indexRight = i
-			maxVal = s
-
-	H, L = gray.shape
-	print L
-	return indexLeft, indexRight
-
+from time import gmtime, strftime
 
 def main():
 	#set_speed(25)
 	last = None
+	start_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 	while True:
-		indexLeft, indexRight = get_white_line_index()
-		print indexLeft, indexRight
+		index = get_white_line_index()
+	end_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+
+	print start_time
+	print end_time
 
 
 if __name__ == '__main__':

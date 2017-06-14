@@ -9,8 +9,9 @@ import color_gradient_selector as cgs
 import cv2
 import os
 import numpy as np
+import white_lines
 
-HOST = '10.1.0.1'    # Server(Raspberry Pi) IP address
+HOST = '10.1.10.106'    # Server(Raspberry Pi) IP address
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)
@@ -129,14 +130,37 @@ def get_white_line_index():
 	print L
 	return indexLeft, indexRight
 
+def test():
+	last_move = None
+	while True:
+		index = white_lines.get_white_line_index()
+		print index
+		mid = 160
+
+		dif = mid - index
+
+		if abs(dif) < 20:
+			turn_home()
+		elif dif > 0:
+			last_move = 'l'
+			turn_left()
+		else:
+			last_move = 'r'
+			turn_right()
+
+		forward()
 
 def main():
+	set_speed(45)
+	test()
+
 	pid_obj = PID(KP, KD, KI)
 
 	turn_home()
 	set_speed(50)
 	forward()
 	prev_dt = time.time()
+
 
 	while True:
 		# Din modulul lui Vasile -> getState()
@@ -147,7 +171,7 @@ def main():
 
 		error = left + right
 		print error
-		if (error <= PERMITTED_ERROR)
+		if (error <= PERMITTED_ERROR):
 			turn_home()
 			set_speed(100)
 			continue
@@ -173,7 +197,6 @@ def main():
 
 if __name__ == '__main__':
 	try:
-		init()
 		main()
 	except KeyboardInterrupt:
 		tcpCliSock.close()
