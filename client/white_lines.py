@@ -12,6 +12,7 @@ import numpy as np
 HOST = '10.1.10.106'    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
+CENTER_INDEX = 320
 
 TMP_FILE = 'tmp.jpg'
 
@@ -50,13 +51,13 @@ def get_white_line_index():
 		l.append(index)
 
 
-
 	cv2.imshow('image', gray)
 	cv2.waitKey(1)
 
 	return np.sum(l) / len(l)
 
-from time import gmtime, strftime
+def set_host(host):
+	HOST = host
 
 def main():
 	#set_speed(25)
