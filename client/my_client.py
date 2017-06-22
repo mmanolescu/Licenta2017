@@ -11,7 +11,7 @@ import white_lines
 import time
 import pid
 
-HOST = '10.1.10.106'    # Server(Raspberry Pi) IP address
+HOST = '10.1.10.101'    # Server(Raspberry Pi) IP address
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)
@@ -29,11 +29,12 @@ BACKWARD = 'BACKWARD'
 SPEED = 'SPEED='
 
 # GainzZz for pid algorithm
-KP = 0.1
+KP = 0.3
 KD = 0.01
-KI = 0.05
-THRESHOLD = 5
-PERMITTED_ERROR = 10
+KI = 0.005
+THRESHOLD = 10
+PERMITTED_ERROR = 20
+NORMAL_SPEED = 70
 
 def send_command(cmd):
 	tcpCliSock.sendall(cmd)
@@ -93,7 +94,7 @@ def main():
 	pid_obj = pid.PID(KP, KD, KI)
 
 	turn_home()
-	set_speed(50)
+	set_speed(NORMAL_SPEED)
 	forward()
 	prev_dt = time.time()
 
@@ -109,7 +110,7 @@ def main():
 		# print error
 		if (abs(error) <= PERMITTED_ERROR):
 			turn_home()
-			set_speed(50)
+			set_speed(NORMAL_SPEED)
 			continue
 
 		dt = time.time() - prev_dt

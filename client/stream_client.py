@@ -9,7 +9,7 @@ import requests
 import sys
 import time
 
-ADDR = '10.1.10.106'
+ADDR = '10.1.10.101'
 
 req = requests.get('http://'+ADDR+':8080/?action=stream', stream=True)
 

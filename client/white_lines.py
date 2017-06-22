@@ -9,7 +9,7 @@ import cv2
 import os
 import numpy as np
 
-HOST = '10.1.10.106'    # Server(Raspberry Pi) IP address
+HOST = '10.1.10.101'    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
 CENTER_INDEX = 320
@@ -32,10 +32,13 @@ def get_white_line_index():
 	gray = cgs.select_rgb_white_yellow(half_img)
 	gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
 
+	gray = cv2.blur(gray,(5,5))
+	gray = cv2.blur(gray,(5,5))
+
 	height, width = gray.shape
 
 	l = []
-	for x in range(height/2, height, 20):
+	for x in range(0, height, 20):
 		maxSum = 0
 		index = 0
 		flag = True
