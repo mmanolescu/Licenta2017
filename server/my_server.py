@@ -5,6 +5,7 @@ import motor
 from socket import *
 import time          # Import necessary modules
 import sys, os, traceback
+import select
 from threading import Thread
 
 HOST = ''           # The variable of HOST is null, so the function bind( ) can be bound to all valid addresses.
@@ -30,6 +31,8 @@ FORWARD = 'FORWARD'
 BACKWARD = 'BACKWARD'
 SPEED = 'SPEED='
 
+EMERGENCY_TIMEOUT = 0.5
+EMERGENCY_STOP = False
 # Streamer thread class to send images via HTTP
 class MJPGStreamerThread(Thread):
 	def __init__(self):
@@ -42,6 +45,16 @@ class MJPGStreamerThread(Thread):
 		command = "./start.sh > /dev/null 2>&1"
 		os.system(command)
 
+class EmergencyModule(Thread):
+	def __init__(self):
+		Thread.__init__(self)
+
+	def run(self):
+		print 'Emergency Module started.\n'
+		# Call Obstacle avoidance, if bad => EMERGENCY_STOP
+		while True:
+			pass
+
 def setup():
 	# Setup and calibrate direction and motor
 	car_dir.setup(busnum=busnum)
@@ -52,6 +65,9 @@ def setup():
 	mjpg_st_th = MJPGStreamerThread()
 	mjpg_st_th.start()
 
+	em_th = EmergencyModule()
+	em_th.start()
+
 def loop():
 	while True:
 		print 'Waiting for connection...'
@@ -60,9 +76,15 @@ def loop():
 		print '...connected from :', addr
 
 		while True:
-			data = ''
-			data = tcpCliSock.recv(BUFSIZ)    # Receive data sent from the client.
-			if not data:
+			if (EMERGENCY_STOP == True)
+				emergency_stop()
+
+			ready = select.select(socket, [], [], EMERGENCY_TIMEOUT)
+			if ready[0]:
+				data = ''
+				data = tcpCliSock.recv(BUFSIZ)    # Receive data sent from the client.
+			else:
+				emergency_stop()
 				break
 			if data == HOME:
 				turn_home()
@@ -95,8 +117,7 @@ def loop():
 			tcpCliSock.send('ACK')
 
 		# In case connection is lost we should stop the car
-		turn_home()
-		set_speed(0)
+		emergency_stop()
 
 def turn_right():
 	car_dir.turn_right()
@@ -108,7 +129,7 @@ def turn_home():
 	car_dir.home()
 
 def turn_angle(angle):
-	car_dir.turn(angle)
+	car_dir.turnS(angle)
 
 def forward():
 	motor.forward()
@@ -118,6 +139,10 @@ def backward():
 
 def set_speed(spd):
 	motor.setSpeed(spd)
+
+def emergency_stop():
+	turn_home()
+	set_speed(0)
 
 def main():
 	try:
