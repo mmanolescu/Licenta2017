@@ -127,6 +127,11 @@ def getNextObstaclePosition(vec, img):
     while left > 0 and vec[left][1] >= vec[left + 1][1]:
         left = left - 1
 
+    if left < 0:
+        left = 0
+    if right >= len(vec):
+        right = len(vec) - 1
+
     for x in range(left, right):
         j, i = vec[x]
         vec[x] = j, minValue
