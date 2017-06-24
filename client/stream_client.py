@@ -11,7 +11,8 @@ import time
 
 ADDR = '192.168.100.17'
 
-req = requests.get('http://'+ADDR+':8080/?action=stream', stream=True)
+#req = requests.get('http://'+ADDR+':8080/?action=stream', stream=True)
+req = requests.get('http://10.1.10.107:8080', stream=True)
 
 def get_next_jpeg():
     # Find the len of the image
@@ -34,5 +35,13 @@ def get_next_jpeg():
     '''
 
     return img
+
+url = "http://10.1.10.107:8080/shot.jpg"
+
+def get_next_shoot():
+    r = requests.get(url)
+    print len(r.content)
+    return r.content
+
 
 
