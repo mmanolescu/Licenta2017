@@ -5,13 +5,14 @@ from socket import *      # Import necessary modules
 import stream_client as sc
 import color_gradient_selector as cgs
 import white_lines as wl
+import floor_obstacles as fl
 import os
 import numpy as np
 import white_lines
 import time
 import pid
 
-HOST = '10.1.10.101'    # Server(Raspberry Pi) IP address
+HOST = '192.168.100.17'    # Server(Raspberry Pi) IP address
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)
@@ -35,6 +36,7 @@ KI = 0.005
 THRESHOLD = 10
 PERMITTED_ERROR = 20
 NORMAL_SPEED = 70
+MIDDLE_OF_ROAD = 160
 
 def send_command(cmd):
 	tcpCliSock.sendall(cmd)
@@ -106,7 +108,7 @@ def main():
 		index = wl.get_white_line_index()
 		print "Index: ", index
 
-		error = 160 - index
+		error = MIDDLE_OF_ROAD - index
 		# print error
 		if (abs(error) <= PERMITTED_ERROR):
 			turn_home()
@@ -132,8 +134,28 @@ def main():
 				turn_right()
 
 
+def obstacles():
+	fl.set_host(HOST)
+
+	turn_home()
+	set_speed(50)
+	forward()
+
+	while True:
+		left, right, distance = fl.get_next_object_index()
+
+		if distance > 50:
+			if (MIDDLE_OF_ROAD - left > right - MIDDLE_OF_ROAD):
+				turn_right()
+			else:
+				turn_left()
+		else:
+			turn_home()
+
+
 if __name__ == '__main__':
 	try:
-		main()
+		# main()
+		obstacles()
 	except KeyboardInterrupt:
 		tcpCliSock.close()
