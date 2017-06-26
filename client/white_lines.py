@@ -32,8 +32,8 @@ def get_white_line_index():
 	gray = cgs.select_rgb_white_yellow(half_img)
 	gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
 
-	gray = cv2.blur(gray,(5,5))
-	gray = cv2.blur(gray,(5,5))
+	#gray = cv2.blur(gray,(5,5))
+	#gray = cv2.blur(gray,(5,5))
 
 	height, width = gray.shape
 
@@ -56,11 +56,14 @@ def get_white_line_index():
 				index = i
 		l.append(index)
 
+	index = np.sum(l) / len(l)
 
-	cv2.imshow('image', gray)
+	cv2.line(half_img, (index, height - 1), (index, 0), (255, 0, 0), 3)
+	cv2.imshow('image', half_img)
 	cv2.waitKey(1)
 
-	index = np.sum(l) / len(l)
+	cv2.imwrite("orig-index-4.jpg", half_img)
+	cv2.imwrite("procesed-index-4.jpg", gray)
 
 	if index == 0:
 		return last_good_index

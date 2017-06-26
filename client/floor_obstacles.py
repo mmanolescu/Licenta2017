@@ -3,7 +3,7 @@
 from socket import *      # Import necessary modules
 import time
 
-import stream_client as sc
+#import stream_client as sc
 import color_gradient_selector as cgs
 import cv2
 import os
@@ -15,7 +15,7 @@ PORT = 21567
 ADDR = (HOST, PORT)
 CENTER_INDEX = 320
 
-TMP_FILE = 'tmp3.jpg'
+TMP_FILE = 'tmp2.jpg'
 
 
 def get_next_object_index():
@@ -23,12 +23,12 @@ def get_next_object_index():
     StepSize = 6
     EdgeArray = []
 
-    orig_img = sc.get_next_jpeg()
+    #orig_img = sc.get_next_jpeg()
 
-    os.remove(TMP_FILE)
-    f = open(TMP_FILE, 'wb')
-    f.write(orig_img)
-    f.close()
+    #os.remove(TMP_FILE)
+    #f = open(TMP_FILE, 'wb')
+    #f.write(orig_img)
+    #f.close()
 
     imgFile = cv2.imread(TMP_FILE, cv2.CV_LOAD_IMAGE_COLOR)
     img = cv2.resize(imgFile, (0,0), fx=0.5, fy=0.5)
@@ -59,32 +59,22 @@ def get_next_object_index():
     for x in range (len(EdgeArray)):        #draw lines from bottom of the screen to points in ObstacleArray
         cv2.line(img, (x*StepSize,imageheight), EdgeArray[x],(0,255,0),1)
 
-    cv2.imshow("camera", img)
-    cv2.waitKey(1)
+    cv2.imshow("camera", imgEdge)
+    cv2.waitKey(0)
 
     left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
     print left1, right1, maxValue
 
-    return left1, right1, maxValue
+    #return left1, right1, maxValue
 
     cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
 
-    left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
-    print left1, right1, maxValue
-
-    cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
-
-
-    left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
-    print left1, right1, maxValue
-
-    cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
 
 
     # print EdgeArray
 
-    # cv2.imshow("camera", img)
-    # cv2.waitKey(0)
+    cv2.imshow("camera", img)
+    cv2.waitKey(0)
 
 
 def getNextObstaclePosition(vec, img):
