@@ -5,7 +5,7 @@ import numpy as np
 # image is expected be in RGB color space
 def select_rgb_white_yellow(image):
     # white color mask
-    thres = 90
+    thres = 50
     lower = np.uint8([thres, thres, thres])
     upper = np.uint8([255, 255, 255])
     white_mask = cv2.inRange(image, lower, upper)

@@ -33,9 +33,13 @@ SPEED = 'SPEED='
 KP = 0.3
 KD = 0.01
 KI = 0.005
-THRESHOLD = 10
-PERMITTED_ERROR = 20
+
+THRESHOLD = 20
+
+PERMITTED_ERROR = 30
 NORMAL_SPEED = 70
+TURN_SPEED = 50
+SLIGHT_TURN_SPEED = 60
 MIDDLE_OF_ROAD = 160
 
 def send_command(cmd):
@@ -100,7 +104,7 @@ def main():
 	forward()
 	prev_dt = time.time()
 
-
+	fps = time.time()
 	while True:
 		# Din modulul lui Vasile -> getState()
 		# returneaza distanta pana in marginea stanga si pana in marginea dreapta
@@ -121,16 +125,16 @@ def main():
 		print "Increase: ", increase, " Error: ", error
 		# Apel pid pentru distanta stanga dreapta => decizie
 		if abs(increase) < THRESHOLD:
+			set_speed(SLIGHT_TURN_SPEED)
 			if increase < 0:
 				turn_slight_left()
 			else:
 				turn_slight_right()
 		else:
+			set_speed(TURN_SPEED)
 			if increase < 0:
-				# set_speed(50)
 				turn_left()
 			else:
-				# set_speed(50)
 				turn_right()
 
 
@@ -138,13 +142,22 @@ def obstacles():
 	fl.set_host(HOST)
 
 	turn_home()
-	set_speed(50)
+	set_speed(70)
 	forward()
 
+	fps = time.time()
 	while True:
+		print time.time() - fps
+		fps = time.time()
 		left, right, distance = fl.get_next_object_index()
 
-		if distance > 50:
+		if distance > 230:
+			while distance > 100:
+				turn_home()
+				backward()
+				left, right, distance = fl.get_next_object_index()
+			forward()
+		elif distance > 30:
 			if (MIDDLE_OF_ROAD - left > right - MIDDLE_OF_ROAD):
 				turn_right()
 			else:
@@ -155,7 +168,7 @@ def obstacles():
 
 if __name__ == '__main__':
 	try:
-		# main()
-		obstacles()
+		main()
+		#obstacles()
 	except KeyboardInterrupt:
 		tcpCliSock.close()

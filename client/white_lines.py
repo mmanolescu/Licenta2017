@@ -9,7 +9,7 @@ import cv2
 import os
 import numpy as np
 
-HOST = '10.1.10.101'    # Server(Raspberry Pi) IP address
+HOST = '192.168.100.17'    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
 CENTER_INDEX = 320
@@ -38,7 +38,8 @@ def get_white_line_index():
 	height, width = gray.shape
 
 	l = []
-	for x in range(0, height, 20):
+	ys = []
+	for x in range(height/2, height, 20):
 		maxSum = 0
 		index = 0
 		flag = True
@@ -54,13 +55,33 @@ def get_white_line_index():
 			if s > maxSum:
 				maxSum = s
 				index = i
+
+		print maxSum / 10, 
+
+		
+		if maxSum / 10 < 90:
+			break
+
 		l.append(index)
+		ys.append(x)
 
+	print "-------"
 
-	cv2.imshow('image', gray)
+	if len(l) > 0:
+		index = (int) (np.sum(l) / len(l))
+	else:
+		index = last_good_index
+
+	i = 0
+	for i in range(len(l)):
+			tmp = l[i]
+			cv2.circle(half_img, (tmp, ys[i]), 15, (255, 0, 0), thickness=10)
+			i = i + 1
+
+	cv2.line(half_img, (index, height - 1), (index, height/2), (0, 0, 255), 6)
+
+	cv2.imshow('image', half_img)
 	cv2.waitKey(1)
-
-	index = np.sum(l) / len(l)
 
 	if index == 0:
 		return last_good_index
