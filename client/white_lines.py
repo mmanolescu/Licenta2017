@@ -32,14 +32,14 @@ def get_white_line_index():
 	gray = cgs.select_rgb_white_yellow(half_img)
 	gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
 
-	gray = cv2.blur(gray,(5,5))
-	gray = cv2.blur(gray,(5,5))
+	#gray = cv2.blur(gray,(5,5))
+	#gray = cv2.blur(gray,(5,5))
 
 	height, width = gray.shape
 
 	l = []
 	ys = []
-	for x in range(height/2, height, 20):
+	for x in range(height/3, height, 20):
 		maxSum = 0
 		index = 0
 		flag = True

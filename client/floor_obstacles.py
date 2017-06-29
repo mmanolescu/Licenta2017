@@ -10,12 +10,12 @@ import os
 import numpy as np
 import math
 
-HOST = '10.1.10.105'    # Server(Raspberry Pi) IP address
+HOST = '192.168.100.17'    # Server(Raspberry Pi) IP address
 PORT = 21567
 ADDR = (HOST, PORT)
 CENTER_INDEX = 320
 
-TMP_FILE = 'tmp3.jpg'
+TMP_FILE = 'tmp2.jpg'
 
 
 def get_next_object_index():
@@ -25,7 +25,7 @@ def get_next_object_index():
 
     orig_img = sc.get_next_jpeg()
 
-    os.remove(TMP_FILE)
+    # os.remove(TMP_FILE)
     f = open(TMP_FILE, 'wb')
     f.write(orig_img)
     f.close()
@@ -35,7 +35,7 @@ def get_next_object_index():
 
     imgGray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)   #convert img to grayscale and store result in imgGray
     imgGray = cv2.bilateralFilter(imgGray,9,30,30) #blur the image slightly to remove noise
-    imgEdge = cv2.Canny(imgGray, 20, 200)             #edge detection
+    imgEdge = cv2.Canny(imgGray, 20, 80)             #edge detection
 
     # cv2.imshow("camera", imgEdge)
     # cv2.waitKey(0)
@@ -59,10 +59,13 @@ def get_next_object_index():
     for x in range (len(EdgeArray)):        #draw lines from bottom of the screen to points in ObstacleArray
         cv2.line(img, (x*StepSize,imageheight), EdgeArray[x],(0,255,0),1)
 
-
+    cv2.imshow("camera", imgEdge)
+    cv2.waitKey(1)
 
     left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
     print left1, right1, maxValue
+
+    return left1, right1, maxValue
 
     cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
     cv2.imshow("camera", img)
@@ -70,22 +73,10 @@ def get_next_object_index():
 
     return left1, right1, maxValue
 
-    left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
-    print left1, right1, maxValue
-
-    cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
-
-
-    left1, right1, maxValue = getNextObstaclePosition(EdgeArray, img)
-    print left1, right1, maxValue
-
-    cv2.line(img, (left1, maxValue), (right1, maxValue), (0,0,255), 10)
-
-
     # print EdgeArray
 
-    # cv2.imshow("camera", img)
-    # cv2.waitKey(0)
+    cv2.imshow("camera", img)
+    cv2.waitKey(0)
 
 
 def getNextObstaclePosition(vec, img):

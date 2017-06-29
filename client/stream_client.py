@@ -36,7 +36,7 @@ def get_next_jpeg():
 
     return img
 
-url = "http://10.1.10.105:8080/shot.jpg"
+url = "http://"+ ADDR +"8080/shot.jpg"
 
 def get_next_shoot():
     r = requests.get(url)

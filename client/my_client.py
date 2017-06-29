@@ -37,9 +37,9 @@ KI = 0.005
 THRESHOLD = 20
 
 PERMITTED_ERROR = 30
-NORMAL_SPEED = 70
-TURN_SPEED = 50
-SLIGHT_TURN_SPEED = 60
+NORMAL_SPEED = 80
+TURN_SPEED = 60
+SLIGHT_TURN_SPEED = 70
 MIDDLE_OF_ROAD = 160
 
 def send_command(cmd):
@@ -157,7 +157,7 @@ def obstacles():
 				backward()
 				left, right, distance = fl.get_next_object_index()
 			forward()
-		elif distance > 30:
+		elif distance > 100:
 			if (MIDDLE_OF_ROAD - left > right - MIDDLE_OF_ROAD):
 				turn_right()
 			else:
@@ -168,7 +168,7 @@ def obstacles():
 
 if __name__ == '__main__':
 	try:
-		main()
-		#obstacles()
+		# main()
+		obstacles()
 	except KeyboardInterrupt:
 		tcpCliSock.close()
